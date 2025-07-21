@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 高级灰黑主题色彩系统 */
+    --background: 218 23% 6%;        /* #0f1119 深炭黑 */
+    --foreground: 218 11% 85%;       /* #d4d4d8 浅灰文字 */
+    --card: 217 19% 9%;              /* #14171f 卡片深灰 */
+    --card-foreground: 218 11% 85%;  /* #d4d4d8 卡片文字 */
+    --popover: 217 19% 9%;           /* #14171f 弹窗深灰 */
+    --popover-foreground: 218 11% 85%; /* #d4d4d8 弹窗文字 */
+    
+    /* 金色强调色系统 */
+    --primary: 43 96% 56%;           /* #f59e0b 高级金色 */
+    --primary-foreground: 218 23% 6%; /* #0f1119 金色上的深色文字 */
+    
+    /* 辅助色彩 */
+    --secondary: 217 19% 15%;        /* #1e293b 次要深灰 */
+    --secondary-foreground: 218 11% 85%; /* #d4d4d8 次要文字 */
+    --muted: 217 19% 12%;            /* #1a1f2e 静音深灰 */
+    --muted-foreground: 215 20% 65%; /* #9ca3af 静音文字 */
+    --accent: 45 93% 47%;            /* #d97706 深金色强调 */
+    --accent-foreground: 218 23% 6%; /* #0f1119 强调色文字 */
+    
+    /* 功能性颜色 */
+    --destructive: 0 72% 51%;        /* #dc2626 红色警告 */
+    --destructive-foreground: 218 11% 95%; /* #f8fafc 警告文字 */
+    --border: 217 19% 15%;           /* #1e293b 边框灰 */
+    --input: 217 19% 15%;            /* #1e293b 输入框背景 */
+    --ring: 43 96% 56%;              /* #f59e0b 焦点环金色 */
+    --radius: 0.5rem;
+    
+    /* 图表金色调色板 */
+    --chart-1: 43 96% 56%;           /* #f59e0b 主金色 */
+    --chart-2: 45 93% 47%;           /* #d97706 深金色 */
+    --chart-3: 39 85% 57%;           /* #f97316 橘金色 */
+    --chart-4: 35 91% 65%;           /* #fb923c 浅橘金 */
+    --chart-5: 220 9% 46%;           /* #6b7280 银灰色 */
+    
+    /* 侧边栏专用色彩 */
+    --sidebar-background: 217 19% 9%; /* #14171f 侧边栏深灰 */
+    --sidebar-foreground: 218 11% 85%; /* #d4d4d8 侧边栏文字 */
+    --sidebar-primary: 43 96% 56%;    /* #f59e0b 侧边栏主色 */
+    --sidebar-primary-foreground: 218 23% 6%; /* #0f1119 */
+    --sidebar-accent: 217 19% 15%;    /* #1e293b 侧边栏强调 */
+    --sidebar-accent-foreground: 218 11% 85%; /* #d4d4d8 */
+    --sidebar-border: 217 19% 15%;    /* #1e293b 侧边栏边框 */
+    --sidebar-ring: 43 96% 56%;       /* #f59e0b 侧边栏焦点环 */
+  }
+
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-noto-sans-sc), system-ui, sans-serif;
+  }
+}
+
+/* 热力图样式 */
+.heatmap-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, hsl(var(--muted)) 0%, hsl(var(--card)) 100%);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.heatmap-cell {
+  position: absolute;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 11px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.heatmap-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 加载动画 */
+.loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+}
+
+/* 数据卡片样式 */
+.data-card {
+  @apply bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow;
+}
+
+.data-card-dark {
+  @apply bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700;
+}
+
+/* 侧边栏动画 */
+.sidebar-transition {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 地图容器样式 */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 监测站点样式 */
+.monitoring-station {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 11px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.monitoring-station:hover {
+  transform: scale(1.2);
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.monitoring-station.selected {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8), 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+/* 站点详情面板动画 */
+.site-detail-panel {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  max-width: 800px;
+  height: 60vh;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.15);
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+}
+
+.site-detail-panel.open {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .site-detail-panel {
+    right: 24px;
+    bottom: 24px;
+    width: 600px;
+    height: 500px;
+    border-radius: 16px;
+    transform: translateX(100%);
+  }
+
+  .site-detail-panel.open {
+    transform: translateX(0);
+  }
+}
+
+/* 工具提示样式 */
+.map-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.2s ease-out;
+}
+
+.map-tooltip.visible {
+  opacity: 1;
+  transform: translateY(-5px);
+}
+
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 图表容器动画 */
+.chart-container {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease-out;
+}
+
+.chart-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 控制面板动画 */
+.control-panel {
+  transform: translateY(-10px);
+  opacity: 0;
+  animation: slideInDown 0.5s ease-out forwards;
+}
+
+@keyframes slideInDown {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 响应式地图调整 */
+@media (max-width: 768px) {
+  .map-container {
+    border-radius: 8px;
+  }
+
+  .monitoring-station {
+    font-size: 10px;
+  }
+
+  .site-detail-panel {
+    height: 70vh;
+  }
+}
