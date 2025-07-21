@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+:root {
+  --black: #000000;
+  --dark-gray: #1a1a1a;
+  --medium-gray: #2a2a2a;
+  --light-gray: #666666;
+  --white: #ffffff;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --hero-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 25%, #ec4899 50%, #f59e0b 75%, #10b981 100%);
+  --feature-gradient-1: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  --feature-gradient-2: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  --feature-gradient-3: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  --pricing-gradient: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+}
+
+@theme inline {
+  --color-black: var(--black);
+  --color-dark-gray: var(--dark-gray);
+  --color-medium-gray: var(--medium-gray);
+  --color-light-gray: var(--light-gray);
+  --color-white: var(--white);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --color-text-primary: var(--white);
+  --color-text-secondary: #cccccc;
+  --color-text-muted: #999999;
+  --color-background: var(--black);
+  --color-card: var(--dark-gray);
+  --color-border: var(--medium-gray);
+  --font-sans: "Libre Baskerville", serif;
+  --font-serif: "Noto Serif SC", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-latin: "Libre Baskerville", serif;
+  --font-chinese: "Noto Serif SC", serif;
+  --border-radius: 0.75rem;
+  --border-radius-sm: 0.5rem;
+  --border-radius-lg: 1rem;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25);
+  --shadow-feature: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --backdrop-blur: blur(10px);
+  --backdrop-blur-nav: blur(20px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-latin), var(--font-chinese);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.hero-gradient {
+  background: var(--hero-gradient);
+}
+
+.feature-gradient-1 {
+  background: var(--feature-gradient-1);
+}
+
+.feature-gradient-2 {
+  background: var(--feature-gradient-2);
+}
+
+.feature-gradient-3 {
+  background: var(--feature-gradient-3);
+}
+
+.pricing-gradient {
+  background: var(--pricing-gradient);
+}
+
+.backdrop-blur {
+  backdrop-filter: var(--backdrop-blur);
+}
+
+.backdrop-blur-nav {
+  backdrop-filter: var(--backdrop-blur-nav);
+}
+
+/* Libre Baskerville Font Classes */
+.libre-baskerville-regular {
+  font-family: "Libre Baskerville", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.libre-baskerville-bold {
+  font-family: "Libre Baskerville", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.libre-baskerville-regular-italic {
+  font-family: "Libre Baskerville", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Noto Serif SC Font Classes */
+.noto-serif-sc-light {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.noto-serif-sc-regular {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-serif-sc-medium {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.noto-serif-sc-semibold {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.noto-serif-sc-bold {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.noto-serif-sc-extrabold {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.noto-serif-sc-black {
+  font-family: "Noto Serif SC", serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Mixed font utility classes */
+.font-mixed {
+  font-family: var(--font-latin), var(--font-chinese);
+}
+
+.font-latin {
+  font-family: var(--font-latin);
+}
+
+.font-chinese {
+  font-family: var(--font-chinese);
+}
