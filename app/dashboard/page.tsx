@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator"
 import type { MonitoringStation } from "@/lib/monitoring-stations"
 import type { CarbonPollutionData } from "@/lib/mock-data"
 import { useCarbonPollutionData } from "@/lib/hooks/use-carbon-pollution-data"
+import { ImageDisplaySystem } from "@/components/dashboard/ImageDisplaySystem"
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -29,6 +30,7 @@ export default function DashboardPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
   const [isApplying, setIsApplying] = useState(false)
   const [showAqiCard, setShowAqiCard] = useState(false)
+  const [filtersApplied, setFiltersApplied] = useState(false)
 
   // 站点详情面板状态
   const [selectedStation, setSelectedStation] = useState<MonitoringStation | null>(null)
@@ -52,6 +54,7 @@ export default function DashboardPage() {
   const handleApplyFilters = async (newFilters: any) => {
     setIsApplying(true)
     setFilters(newFilters)
+    setFiltersApplied(true) // 标记已应用筛选
     if (newFilters.dataSource === "wrf-mcip" || newFilters.dataSource === "cmaq") {
       setShowAqiCard(true)
     } else {
@@ -149,6 +152,15 @@ export default function DashboardPage() {
               onStationClick={handleStationClick}
               isFullscreen={isMapFullscreen}
               onToggleFullscreen={() => setIsMapFullscreen(!isMapFullscreen)}
+            />
+          </div>
+
+          {/* 图像显示系统 */}
+          <div className="control-panel" style={{ animationDelay: "0.4s" }}>
+            <ImageDisplaySystem 
+              filters={filters}
+              showImages={filtersApplied && !isApplying && !isLoading}
+              showNationalMap={!filtersApplied}
             />
           </div>
 
