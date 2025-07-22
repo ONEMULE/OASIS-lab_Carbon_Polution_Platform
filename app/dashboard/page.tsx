@@ -28,6 +28,7 @@ export default function DashboardPage() {
   })
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
   const [isApplying, setIsApplying] = useState(false)
+  const [showAqiCard, setShowAqiCard] = useState(false)
 
   // 站点详情面板状态
   const [selectedStation, setSelectedStation] = useState<MonitoringStation | null>(null)
@@ -35,14 +36,8 @@ export default function DashboardPage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false)
   const [isMapFullscreen, setIsMapFullscreen] = useState(false)
 
-  // TODO: Replace with actual data fetching logic based on the new filters
-  const { data, isLoading } = useCarbonPollutionData({
-    selectedRegions: [],
-    selectedCities: [],
-    timeGranularity: "day",
-    dateRange: { from: new Date(), to: new Date() },
-    selectedPollutants: [],
-  })
+  // Pass the correct filters to the hook
+  const { data, isLoading } = useCarbonPollutionData(filters)
 
   useEffect(() => {
     if (!user) {
@@ -57,6 +52,11 @@ export default function DashboardPage() {
   const handleApplyFilters = async (newFilters: any) => {
     setIsApplying(true)
     setFilters(newFilters)
+    if (newFilters.dataSource === "wrf-mcip" || newFilters.dataSource === "cmaq") {
+      setShowAqiCard(true)
+    } else {
+      setShowAqiCard(false)
+    }
     // 模拟应用筛选的延迟
     await new Promise((resolve) => setTimeout(resolve, 1000))
     console.log("Applied filters:", newFilters)
@@ -133,6 +133,23 @@ export default function DashboardPage() {
             </Card>
             {/* Other summary cards... */}
           </div>
+
+          {showAqiCard && (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 control-panel">
+              {filters.stations.map((station: string) => (
+                <Card key={station} className="data-card">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">{station}</CardTitle>
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">-</div>
+                    <p className="text-xs text-muted-foreground">AQI</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           <div className="control-panel" style={{ animationDelay: "0.3s" }}>
             <InteractiveChinaMap
