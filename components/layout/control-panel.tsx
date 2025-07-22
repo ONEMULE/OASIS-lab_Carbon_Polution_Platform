@@ -505,7 +505,7 @@ export function ControlPanel({ onApplyFilters, onExport, isLoading = false }: Co
             </label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-between bg-transparent">
+                <Button variant="outline" className="w-full justify-between">
                   <span>{selectedStations.length === 0 ? "全部站点" : `已选 ${selectedStations.length} 个站点`}</span>
                 </Button>
               </PopoverTrigger>
