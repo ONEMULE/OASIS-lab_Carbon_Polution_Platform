@@ -159,7 +159,7 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="aspect-[4/3] relative bg-muted">
+          <div className="relative bg-muted min-h-[400px] flex items-center justify-center">
             {isLoading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <Skeleton className="w-full h-full" />
@@ -185,7 +185,7 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
             <img
               src={config.src}
               alt={config.alt}
-              className={`w-full h-full object-contain transition-opacity duration-300 ${
+              className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
                 isLoading ? 'opacity-0' : 'opacity-100'
               }`}
               onLoad={() => handleImageLoad(config.src)}
@@ -215,8 +215,19 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
         )}
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {imageConfigs.map((config, index) => renderImageCard(config, index))}
+      <div className={showNationalMap ? 
+        "flex justify-center w-full" : 
+        "grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3"
+      }>
+        {imageConfigs.map((config, index) => 
+          showNationalMap ? (
+            <div key={`${config.src}-${index}`} className="w-full max-w-6xl">
+              {renderImageCard(config, index)}
+            </div>
+          ) : (
+            renderImageCard(config, index)
+          )
+        )}
       </div>
     </div>
   )

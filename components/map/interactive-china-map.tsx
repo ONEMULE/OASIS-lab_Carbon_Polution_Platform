@@ -229,23 +229,6 @@ export function InteractiveChinaMap({
     <Card className={`${isFullscreen ? "fixed inset-0 z-50" : ""} transition-all duration-300`}>
       <CardContent className="p-0">
         <div className="relative">
-          {/* 地图控制按钮 */}
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-            <Button variant="outline" size="sm" onClick={handleZoomIn} className="bg-background/80 backdrop-blur">
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleZoomOut} className="bg-background/80 backdrop-blur">
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleReset} className="bg-background/80 backdrop-blur">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            {onToggleFullscreen && (
-              <Button variant="outline" size="sm" onClick={onToggleFullscreen} className="bg-background/80 backdrop-blur">
-                <Maximize2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
 
           {/* 地图容器 */}
           <div
