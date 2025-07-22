@@ -1,97 +1,468 @@
 "use client"
 
-import { CalendarIcon, MapPin, Filter, Search, Download } from "lucide-react"
-import { format } from "date-fns"
-import { zhCN } from "date-fns/locale"
-import { cn } from "@/lib/utils"
+import { useState } from "react"
+import { CalendarIcon, MapPin, Filter, Search, Download, Database, Factory, Leaf, Wind } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Checkbox } from "@/components/ui/checkbox"
-import { regions, pollutantTypes } from "@/lib/mock-data"
-import type { TimeGranularity } from "@/lib/hooks/use-carbon-pollution-data"
+import { Badge } from "@/components/ui/badge"
+import { dataSources, meicDepartments, variables, months } from "@/lib/config-data"
 import { useAuth } from "@/lib/auth-context"
 
+const stationNames = [
+  "HONG KONG INTL",
+  "MACAU INTL",
+  "TA KWU LING",
+  "LAU FAU SHAN",
+  "SHA TIN",
+  "CHEUNG CHAU",
+  "CHIANG KAI SHEK INTL",
+  "SUNGSHAN",
+  "KAOHSIUNG INTL",
+  "CHING CHUAN KANG AB",
+  "MOHE",
+  "HUMA",
+  "TULIHE",
+  "AIHUI",
+  "HAILAR",
+  "XIAO'ERGOU",
+  "NENJIANG",
+  "SUNWU",
+  "XIN BARAG YOUQI",
+  "BUGT",
+  "KESHAN",
+  "ARXAN",
+  "SANJIAZI",
+  "HAILUN",
+  "YICHUN(e)",
+  "FUJIN",
+  "TAILAI",
+  "ANDA",
+  "BAOQING",
+  "ULIASTAI",
+  "QIAN GORLOS",
+  "HARBIN",
+  "TONGHE",
+  "SHANGZHI",
+  "JIXI",
+  "HULIN",
+  "KABA HE",
+  "ALTAY",
+  "FUYUN",
+  "TACHENG",
+  "HOBOKSAR",
+  "KARAMAY",
+  "BAYTIK SHAN",
+  "JINGHE",
+  "QITAI",
+  "YINING",
+  "WU LU MU QI",
+  "DIWOPU",
+  "BALGUNTAY",
+  "SHISANJIANFANG",
+  "BAYANBULAK",
+  "TURPAN",
+  "KUQA",
+  "KORLA",
+  "KASHI",
+  "AKQI",
+  "BACHU",
+  "ALAR",
+  "TAZHONG",
+  "TIKANLIK",
+  "RUOQIANG",
+  "SHACHE",
+  "PISHAN",
+  "HOTAN",
+  "MANGNAI",
+  "NAOMAOHU",
+  "HAMI",
+  "EJIN QI",
+  "MAZONG SHAN",
+  "GUAIZIHU",
+  "DUNHUANG",
+  "YUMENZHEN",
+  "BAYAN MOD",
+  "JIUQUAN(SUZHOU)",
+  "ZHONGCHUAN",
+  "LENGHU",
+  "ZHANGYE",
+  "MINQIN",
+  "DA-QAIDAM",
+  "DELINGHA",
+  "GANGCA",
+  "WUSHAOLING",
+  "GOLMUD",
+  "DOULAN",
+  "XINING",
+  "WUDAOLIANG",
+  "GUINAN",
+  "YU ZHONG",
+  "HUAJIALING",
+  "ERENHOT",
+  "NARAN BULAG",
+  "MANDAL",
+  "ABAG QI",
+  "HAILS",
+  "JURH",
+  "HALIUT",
+  "BAILING-MIAO",
+  "HUADE",
+  "BAITA",
+  "JINING",
+  "DATONG",
+  "JARTAI",
+  "LINHE",
+  "OTOG QI",
+  "DONGSHENG",
+  "HEQU",
+  "WUTAI SHAN",
+  "YU XIAN",
+  "YINCHUAN",
+  "YULIN",
+  "YUANPING",
+  "SHIJIAZHUANG",
+  "ZHONGNING",
+  "YANCHI",
+  "LISHI",
+  "WUSU",
+  "YUSHE",
+  "XINGTAI",
+  "YAN AN",
+  "JIEXIU",
+  "ANYANG",
+  "PINGLIANG",
+  "XIFENGZHEN",
+  "YUNCHENG",
+  "YANGCHENG",
+  "XI UJIMQIN QI",
+  "JARUD QI",
+  "LINDONG",
+  "CHANGLING",
+  "MUDANJIANG",
+  "SUIFENHE",
+  "XILIN HOT",
+  "LINXI",
+  "TONGLIAO",
+  "SIPING",
+  "LONGJIA",
+  "TAIPING",
+  "DUNHUA",
+  "DUOLUN",
+  "CHIFENG",
+  "BUGT(e)",
+  "ZHANGWU",
+  "QINGYUAN",
+  "HUADIAN",
+  "YANJI",
+  "FENGNING",
+  "WEICHANG",
+  "CHAOYANG",
+  "JINZHOU",
+  "SHENYANG",
+  "TAOXIAN",
+  "BENXI",
+  "LINJIANG",
+  "JI'AN",
+  "CHANGBAI",
+  "ZHANGJIAKOU",
+  "HUAILAI",
+  "CHENGDE",
+  "QINGLONG",
+  "YINGKOU",
+  "KUANDIAN",
+  "DANDONG",
+  "BEIJING - CAPITAL INTERNATIONAL AIRPORT",
+  "TIANJIN",
+  "BINHAI",
+  "TANGSHAN",
+  "LETING",
+  "BAODING",
+  "POTOU",
+  "ZHOUSHUIZI",
+  "LINGXIAN",
+  "HUIMIN",
+  "CHANG DAO",
+  "LONGKOU",
+  "CHENGSHANTOU",
+  "XINXIAN",
+  "JINAN(TSINAN)",
+  "TAI SHAN",
+  "YIYUAN",
+  "WEIFANG",
+  "LIUTING",
+  "HAIYANG",
+  "DINGTAO",
+  "YANZHOU",
+  "FEZXZAN",
+  "RIZHAO",
+  "SHIQUANHE",
+  "BAINGOIN",
+  "NAGQU",
+  "XAINZA",
+  "XIGAZE",
+  "LHASA",
+  "TINGRI",
+  "LHUNZE",
+  "PAGRI",
+  "TUOTUOHE",
+  "ZADOI",
+  "QUMARLEB",
+  "YUSHU",
+  "MADOI",
+  "DARLAG",
+  "HENAN",
+  "RUO'ERGAI",
+  "HEZUO",
+  "WUDU",
+  "SOG XIAN",
+  "DENGQEN",
+  "QAMDO",
+  "DEGE",
+  "GARZE",
+  "SERTAR",
+  "DAWU",
+  "BARKAM",
+  "SONGPAN",
+  "WENJIANG",
+  "MIANYANG",
+  "BATANG",
+  "LITANG",
+  "YA'AN",
+  "SHUANGLIU",
+  "NYINGCHI",
+  "DAOCHENG",
+  "KANGDING",
+  "EMEI SHAN",
+  "DEQEN",
+  "JIULONG",
+  "YIBIN",
+  "XICHANG",
+  "ZHAOTONG",
+  "LIJING",
+  "HUILI",
+  "HUIZE",
+  "WEINING",
+  "TENGCHONG",
+  "BAOSHAN",
+  "DALI",
+  "YUANMOU",
+  "CHUXIONG",
+  "WUJIABA",
+  "ZHANYI",
+  "RUILI",
+  "LUXI",
+  "GENGMA",
+  "LINCANG",
+  "LANCANG",
+  "JINGHONG",
+  "SIMAO",
+  "YUANJIANG",
+  "MENGLA",
+  "JIANGCHENG",
+  "MENGZI",
+  "BEIDAO",
+  "FENGXIANG",
+  "XIANYANG",
+  "HUA SHAN",
+  "LUSHI",
+  "MENGJIN",
+  "XINZHENG",
+  "HANZHONG",
+  "JINGHE(e)",
+  "NANYANG",
+  "XIHUA",
+  "WANYUAN",
+  "ANKANG",
+  "FANGXIAN",
+  "LAOHEKOU",
+  "ZAOYANG",
+  "ZHUMADIAN",
+  "XINYANG",
+  "LANGZHONG",
+  "DA XIAN",
+  "FENGJIE",
+  "ZHONGXIANG",
+  "MACHENG",
+  "GAOPING",
+  "LIANGPING",
+  "ENSHI",
+  "YICHANG",
+  "JIANGLING",
+  "TIANHE",
+  "SANYA PHOENIX INTL",
+  "NEIJIANG",
+  "JIANGBEI",
+  "SANGZHI",
+  "YUEYANG",
+  "XIUSHUI",
+  "NAXI",
+  "YOUYANG",
+  "YUANLING",
+  "CHANGDE",
+  "CHANGSHA",
+  "BIJIE",
+  "SINAN",
+  "ZHIJIANG",
+  "SHAOYANG",
+  "NANYUE",
+  "YICHUN",
+  "JI'AN(e)",
+  "LONGDONGBAO",
+  "SANSUI",
+  "TONGDAO",
+  "WUGANG",
+  "LINGLING",
+  "XINGREN",
+  "LUODIAN",
+  "DUSHAN",
+  "RONGJIANG",
+  "LIANGJIANG",
+  "CHENZHOU",
+  "GANZHOU",
+  "XUZHOU",
+  "GANYU",
+  "BOXIAN",
+  "HUAIYIN",
+  "SHEYANG",
+  "FUYANG",
+  "GUSHI",
+  "BENGBU",
+  "LUKOU",
+  "LISHE",
+  "DONGTAI",
+  "LUSI",
+  "HUOSHAN",
+  "LUOGANG",
+  "PUDONG",
+  "WUHUXIAN",
+  "LIYANG",
+  "SHANGHAI",
+  "HONGQIAO INTL",
+  "ANQING",
+  "HUANG SHAN",
+  "XIAOSHAN",
+  "SHENGSI",
+  "DINGHAI",
+  "LU SHAN",
+  "JINGDEZHEN",
+  "SHENGXIAN",
+  "SHIPU",
+  "CHANGBEI INTL",
+  "QU XIAN",
+  "LISHUI",
+  "DACHEN DAO",
+  "NANCHENG",
+  "SHAOWU",
+  "WUYISHAN",
+  "PUCHENG",
+  "RUIAN",
+  "FUDING",
+  "GUANGCHANG",
+  "NANPING",
+  "FUZHOU",
+  "CHANGTING",
+  "YONG'AN",
+  "ZHANG PING",
+  "JIUXIAN SHAN",
+  "PINGTAN",
+  "TAIBEI",
+  "PENGJIA YU",
+  "GUANGNAN",
+  "HECHI",
+  "LIUZHOU",
+  "MENGSHAN",
+  "LIANZHOU",
+  "SHAOGUAN",
+  "FOGANG",
+  "LIANPING",
+  "XUNWU",
+  "MEI XIAN",
+  "GAOQI",
+  "TAIZHONG",
+  "NAPO",
+  "BAISE",
+  "GUIPING",
+  "WUZHOU",
+  "GAOYAO",
+  "BAIYUN INTL",
+  "HUANGHUA",
+  "HEYUAN",
+  "SHANTOU",
+  "TAINAN",
+  "LONGZHOU",
+  "WUXU",
+  "XINYI",
+  "BAOAN INTL",
+  "SHANWEI",
+  "HENGCHUN",
+  "TAIDONG",
+  "LAN YU",
+  "QINZHOU",
+  "BEIHAI",
+  "ZHANJIANG",
+  "YANGJIANG",
+  "SHANGCHUAN DAO",
+  "HAIKOU",
+  "DONGSHA DAO",
+  "DONGFANG",
+  "DANXIAN",
+  "QIONGHAI",
+  "SANYA",
+  "XISHA DAO",
+  "SANHU DAO"
+]
+
+type DataSourceType = "wrf-mcip" | "meic" | "megan" | "cmaq"
+
 interface ControlPanelProps {
-  selectedRegions: string[]
-  onRegionsChange: (regions: string[]) => void
-  selectedCities: string[]
-  onCitiesChange: (cities: string[]) => void
-  timeGranularity: TimeGranularity
-  onTimeGranularityChange: (granularity: TimeGranularity) => void
-  dateRange: {
-    from: Date
-    to: Date
-  }
-  onDateRangeChange: (range: { from: Date; to: Date }) => void
-  selectedPollutants: string[]
-  onPollutantsChange: (pollutants: string[]) => void
+  onApplyFilters: (filters: any) => void
   onExport: () => void
-  onApplyFilters: () => void
   isLoading?: boolean
 }
 
-export function ControlPanel({
-  selectedRegions,
-  onRegionsChange,
-  selectedCities,
-  onCitiesChange,
-  timeGranularity,
-  onTimeGranularityChange,
-  dateRange,
-  onDateRangeChange,
-  selectedPollutants,
-  onPollutantsChange,
-  onExport,
-  onApplyFilters,
-  isLoading = false,
-}: ControlPanelProps) {
+export function ControlPanel({ onApplyFilters, onExport, isLoading = false }: ControlPanelProps) {
   const { user } = useAuth()
   const canExport = user?.role === "Administrator" || user?.role === "Analyst"
 
-  const handleRegionToggle = (regionName: string) => {
-    if (selectedRegions.includes(regionName)) {
-      onRegionsChange(selectedRegions.filter((r) => r !== regionName))
+  const [dataSource, setDataSource] = useState<DataSourceType>("wrf-mcip")
+  const [selectedStations, setSelectedStations] = useState<string[]>([])
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("")
+  const [selectedVariable, setSelectedVariable] = useState<string>("")
+  const [selectedMonth, setSelectedMonth] = useState<number>(1)
+
+  const handleApply = () => {
+    const filters = {
+      dataSource,
+      ...(dataSource === "wrf-mcip" || dataSource === "cmaq" ? { stations: selectedStations } : {}),
+      ...(dataSource === "meic" ? { department: selectedDepartment } : {}),
+      variable: selectedVariable,
+      month: selectedMonth,
+    }
+    onApplyFilters(filters)
+  }
+
+  const handleStationToggle = (stationName: string) => {
+    if (selectedStations.includes(stationName)) {
+      setSelectedStations(selectedStations.filter((s) => s !== stationName))
     } else {
-      onRegionsChange([...selectedRegions, regionName])
+      setSelectedStations([...selectedStations, stationName])
     }
   }
 
-  const handleCityToggle = (cityName: string) => {
-    if (selectedCities.includes(cityName)) {
-      onCitiesChange(selectedCities.filter((c) => c !== cityName))
-    } else {
-      onCitiesChange([...selectedCities, cityName])
-    }
-  }
-
-  const handlePollutantToggle = (pollutant: string) => {
-    if (selectedPollutants.includes(pollutant)) {
-      onPollutantsChange(selectedPollutants.filter((p) => p !== pollutant))
-    } else {
-      onPollutantsChange([...selectedPollutants, pollutant])
-    }
-  }
-
-  const getAvailableCities = () => {
-    if (selectedRegions.length === 0) {
-      return regions.flatMap((region) => region.cities)
-    }
-    return regions.filter((region) => selectedRegions.includes(region.name)).flatMap((region) => region.cities)
-  }
+  const currentDataSource = dataSources.find((ds) => ds.id === dataSource)
+  const availableVariables = variables[dataSource]
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 space-y-4">
-      {/* 标题栏 */}
+    <div className="bg-card border border-border rounded-lg p-4 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Filter className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">数据筛选控制面板</h2>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={onApplyFilters} disabled={isLoading} className="bg-primary hover:bg-primary/90">
+          <Button onClick={handleApply} disabled={isLoading} className="bg-primary hover:bg-primary/90">
             <Search className="h-4 w-4 mr-2" />
             {isLoading ? "查询中..." : "应用筛选"}
           </Button>
@@ -104,193 +475,153 @@ export function ControlPanel({
         </div>
       </div>
 
-      {/* 筛选控件 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* 区域选择 */}
+        {/* Level 1: Data Source Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">区域选择</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-between bg-transparent">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>{selectedRegions.length === 0 ? "全部区域" : `已选 ${selectedRegions.length} 个区域`}</span>
-                </div>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">选择区域</h4>
-                  {selectedRegions.length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={() => onRegionsChange([])}>
-                      清除全部
-                    </Button>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  {regions.map((region) => (
-                    <div key={region.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={region.id}
-                        checked={selectedRegions.includes(region.name)}
-                        onCheckedChange={() => handleRegionToggle(region.name)}
-                      />
-                      <label htmlFor={region.id} className="text-sm cursor-pointer flex-1">
-                        {region.name}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {/* 城市选择 */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">城市选择</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-between bg-transparent">
-                <span>{selectedCities.length === 0 ? "全部城市" : `已选 ${selectedCities.length} 个城市`}</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">选择城市</h4>
-                  {selectedCities.length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={() => onCitiesChange([])}>
-                      清除全部
-                    </Button>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-                  {getAvailableCities().map((city) => (
-                    <div key={city} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={city}
-                        checked={selectedCities.includes(city)}
-                        onCheckedChange={() => handleCityToggle(city)}
-                      />
-                      <label htmlFor={city} className="text-sm cursor-pointer">
-                        {city}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {/* 时间粒度 */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">时间粒度</label>
-          <Select value={timeGranularity} onValueChange={(value: TimeGranularity) => onTimeGranularityChange(value)}>
+          <label className="text-sm font-medium flex items-center">
+            <Database className="h-4 w-4 mr-2" />
+            数据源类型
+          </label>
+          <Select value={dataSource} onValueChange={(value: DataSourceType) => setDataSource(value)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hour">小时</SelectItem>
-              <SelectItem value="day">天</SelectItem>
-              <SelectItem value="month">月</SelectItem>
-              <SelectItem value="year">年</SelectItem>
+              {dataSources.map((ds) => (
+                <SelectItem key={ds.id} value={ds.id}>
+                  {ds.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* 日期范围 */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">时间范围</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, "MM月dd日", { locale: zhCN })} -{" "}
-                      {format(dateRange.to, "MM月dd日", { locale: zhCN })}
-                    </>
-                  ) : (
-                    format(dateRange.from, "MM月dd日", { locale: zhCN })
-                  )
-                ) : (
-                  <span>选择日期范围</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={dateRange?.from}
-                selected={dateRange}
-                onSelect={(range) => {
-                  if (range?.from && range?.to) {
-                    onDateRangeChange({ from: range.from, to: range.to })
-                  }
-                }}
-                numberOfMonths={2}
-                locale={zhCN}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
-
-      {/* 污染物选择 */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">污染物类型</label>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(pollutantTypes).map(([key, pollutant]) => (
-            <Button
-              key={key}
-              variant={selectedPollutants.includes(key) ? "default" : "outline"}
-              size="sm"
-              onClick={() => handlePollutantToggle(key)}
-              className="text-xs"
-            >
-              <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: pollutant.color }} />
-              {pollutant.name}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* 已选择的筛选条件显示 */}
-      {(selectedRegions.length > 0 || selectedCities.length > 0 || selectedPollutants.length > 0) && (
-        <div className="space-y-2">
-          <label className="text-sm font-medium">当前筛选条件</label>
-          <div className="flex flex-wrap gap-2">
-            {selectedRegions.map((region) => (
-              <Badge key={region} variant="secondary" className="text-xs">
-                区域: {region}
-              </Badge>
-            ))}
-            {selectedCities.slice(0, 5).map((city) => (
-              <Badge key={city} variant="outline" className="text-xs">
-                城市: {city}
-              </Badge>
-            ))}
-            {selectedCities.length > 5 && (
-              <Badge variant="outline" className="text-xs">
-                +{selectedCities.length - 5} 个城市
-              </Badge>
-            )}
-            {selectedPollutants.map((pollutant) => (
-              <Badge key={pollutant} variant="default" className="text-xs">
-                {pollutantTypes[pollutant as keyof typeof pollutantTypes]?.name}
-              </Badge>
-            ))}
+        {/* Level 2: Conditional Filters */}
+        {currentDataSource?.hasStations && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center">
+              <MapPin className="h-4 w-4 mr-2" />
+              站点选择
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-between bg-transparent">
+                  <span>{selectedStations.length === 0 ? "全部站点" : `已选 ${selectedStations.length} 个站点`}</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">选择站点</h4>
+                    {selectedStations.length > 0 && (
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedStations([])}>
+                        清除全部
+                      </Button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                    {stationNames.map((station) => (
+                        <div key={station} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={station}
+                            checked={selectedStations.includes(station)}
+                            onCheckedChange={() => handleStationToggle(station)}
+                          />
+                          <label htmlFor={station} className="text-sm cursor-pointer">
+                            {station}
+                          </label>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
+        )}
+
+        {dataSource === "meic" && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center">
+              <Factory className="h-4 w-4 mr-2" />
+              部门选择
+            </label>
+            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+              <SelectTrigger>
+                <SelectValue placeholder="选择部门" />
+              </SelectTrigger>
+              <SelectContent>
+                {meicDepartments.map((dep) => (
+                  <SelectItem key={dep} value={dep}>
+                    {dep}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {/* Level 3: Variable Selection */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium flex items-center">
+            <Wind className="h-4 w-4 mr-2" />
+            变量选择
+          </label>
+          <Select value={selectedVariable} onValueChange={setSelectedVariable}>
+            <SelectTrigger>
+              <SelectValue placeholder="选择变量" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableVariables.map((varName) => (
+                <SelectItem key={varName} value={varName}>
+                  {varName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
+
+        {/* Level 4: Time Selection */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium flex items-center">
+            <CalendarIcon className="h-4 w-4 mr-2" />
+            时间选择 (2023年)
+          </label>
+          <Select value={String(selectedMonth)} onValueChange={(value) => setSelectedMonth(Number(value))}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((m) => (
+                <SelectItem key={m.id} value={String(m.id)}>
+                  {m.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Display selected filters */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium">当前筛选条件</label>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="secondary">数据源: {currentDataSource?.name}</Badge>
+          {currentDataSource?.hasStations &&
+            selectedStations.slice(0, 5).map((s) => (
+              <Badge key={s} variant="outline">
+                站点: {s}
+              </Badge>
+            ))}
+          {currentDataSource?.hasStations && selectedStations.length > 5 && (
+            <Badge variant="outline">+{selectedStations.length - 5} 个站点</Badge>
+          )}
+          {dataSource === "meic" && selectedDepartment && (
+            <Badge variant="outline">部门: {selectedDepartment}</Badge>
+          )}
+          {selectedVariable && <Badge variant="default">{selectedVariable}</Badge>}
+          <Badge variant="secondary">时间: 2023年{selectedMonth}月</Badge>
+        </div>
+      </div>
     </div>
   )
 }
