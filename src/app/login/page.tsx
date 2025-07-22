@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -14,6 +15,14 @@ import {
   LockClosedIcon,
   ExclamationTriangleIcon 
 } from '@heroicons/react/24/outline';
+
+const DitherEffect = dynamic(
+  () => import('@/components/effects/ClientOnlyDither'),
+  { 
+    ssr: false,
+    loading: () => <div className="absolute inset-0 bg-gray-800" />
+  }
+);
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -58,27 +67,45 @@ const LoginPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen relative overflow-hidden bg-gray-900">
+      {/* Dither背景层 */}
+      <div className="absolute inset-0 z-0">
+        <DitherEffect
+          waveSpeed={0.1}
+          waveFrequency={4}
+          waveAmplitude={0.6}
+          waveColor={[0.8, 0.4, 0.2]}
+          colorNum={4}
+          pixelSize={4}
+          disableAnimation={false}
+          enableMouseInteraction={true}
+          mouseRadius={1.5}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        />
+      </div>
+      
+      {/* 登录内容层 */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center">
-              <span className="text-black libre-baskerville-bold text-2xl">PM</span>
+            <div className="w-16 h-16 bg-transparent flex items-center justify-center">
+              <span className="text-white libre-baskerville-bold text-2xl">PM</span>
             </div>
           </div>
-          <Typography variant="h3" className="mb-2 noto-serif-sc-bold">
+          <Typography variant="h3" className="mb-2 noto-serif-sc-bold text-white">
             污染监测系统
           </Typography>
-          <Typography variant="body-large" className="text-gray-400 libre-baskerville-regular">
+          <Typography variant="body-large" className="text-gray-300 libre-baskerville-regular">
             环境数据智能分析平台
           </Typography>
         </div>
 
         {/* Login Form */}
-        <Card>
+        <Card className="bg-transparent border-none shadow-none">
           <CardHeader>
-            <CardTitle className="text-center">用户登录</CardTitle>
+            <CardTitle className="text-center text-white">用户登录</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -97,7 +124,7 @@ const LoginPage: React.FC = () => {
                     value={formData.username}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-10 pr-4 py-2 bg-medium-gray border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent libre-baskerville-regular"
+                    className="w-full pl-10 pr-4 py-2 bg-black/20 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent libre-baskerville-regular"
                     placeholder="请输入用户名"
                   />
                 </div>
@@ -118,7 +145,7 @@ const LoginPage: React.FC = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-10 pr-12 py-2 bg-medium-gray border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent libre-baskerville-regular"
+                    className="w-full pl-10 pr-12 py-2 bg-black/20 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent libre-baskerville-regular"
                     placeholder="请输入密码"
                   />
                   <button
@@ -142,7 +169,7 @@ const LoginPage: React.FC = () => {
                   name="remember"
                   checked={formData.remember}
                   onChange={handleInputChange}
-                  className="w-4 h-4 text-white bg-medium-gray border-gray-600 rounded focus:ring-white focus:ring-2"
+                  className="w-4 h-4 text-white bg-black/20 border-gray-600 rounded focus:ring-white focus:ring-2"
                 />
                 <label className="ml-2 block text-sm libre-baskerville-regular text-gray-300">
                   记住登录状态
@@ -177,14 +204,14 @@ const LoginPage: React.FC = () => {
         </Card>
 
         {/* Demo Accounts */}
-        <Card>
+        <Card className="bg-transparent border-none shadow-none">
           <CardHeader>
-            <CardTitle className="text-center text-lg">演示账户</CardTitle>
+            <CardTitle className="text-center text-lg text-white">演示账户</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {demoUsers.map((user) => (
-                <div key={user.username} className="flex items-center justify-between p-3 bg-medium-gray rounded-lg">
+                <div key={user.username} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
                   <div>
                     <div className="libre-baskerville-bold text-white">{user.username}</div>
                     <div className="text-sm libre-baskerville-regular text-gray-400">{user.role} · {user.description}</div>
@@ -208,6 +235,7 @@ const LoginPage: React.FC = () => {
         {/* Footer */}
         <div className="text-center text-sm libre-baskerville-regular text-gray-500">
           © 2024 环境监测系统 · 技术支持
+        </div>
         </div>
       </div>
     </div>

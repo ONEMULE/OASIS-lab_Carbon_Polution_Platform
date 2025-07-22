@@ -12,6 +12,12 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { Leaf, BarChart3, Users, Shield, TrendingUp, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import dynamic from 'next/dynamic'
+
+const SimpleDither = dynamic(() => import('../components/effects/SimpleDither'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-indigo-900/50" />
+})
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
@@ -58,7 +64,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Dither动态背景层 */}
+      <div className="absolute inset-0 z-0">
+        <SimpleDither
+          waveSpeed={0.025}
+          waveFrequency={2.5}
+          waveAmplitude={0.4}
+          waveColor={[0.15, 0.2, 0.35]}
+          colorNum={8}
+          pixelSize={2}
+          enableMouseInteraction={true}
+          mouseRadius={1.2}
+        />
+      </div>
+      
+      {/* 登录内容层 */}
+      <div className="relative z-20 min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
         {/* 左侧 - 品牌介绍 */}
         <div className="space-y-8">
@@ -124,7 +146,7 @@ export default function LoginPage() {
         </div>
 
         {/* 右侧 - 登录表单 */}
-        <Card className="w-full max-w-md mx-auto shadow-xl bg-card/60 backdrop-blur-sm">
+        <Card className="w-full max-w-md mx-auto shadow-xl bg-dark-gray/40 backdrop-blur-md border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
           <CardHeader className="text-center space-y-2">
             <CardTitle className="text-2xl">系统登录</CardTitle>
             <CardDescription>请使用您的账户凭据登录碳污协同分析平台</CardDescription>
@@ -224,6 +246,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   )

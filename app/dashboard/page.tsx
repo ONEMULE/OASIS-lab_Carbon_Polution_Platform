@@ -108,8 +108,8 @@ export default function DashboardPage() {
         <div className="flex-1 space-y-6 p-6">
           {/* 页面标题 */}
           <div className="space-y-2 control-panel">
-            <h1 className="text-3xl font-bold tracking-tight">交互式数据地图</h1>
-            <p className="text-muted-foreground">点击地图上的监测站点查看详细分析 • 基于实时数据的地理空间可视化</p>
+            <h1 className="text-3xl font-bold tracking-tight">数据查询面板</h1>
+            <p className="text-muted-foreground">自定义筛选条件 • 基于模拟与观测数据的数据地理时序空间可视化</p>
           </div>
 
           {/* 控制面板 */}
