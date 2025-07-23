@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from './components/ui/Card';
 import { Button } from './components/ui/Button';
 import { Typography } from './components/ui/Typography';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { useEnhancedChartViewer } from '@/hooks/useEnhancedChartViewer';
+import { EnhancedChartViewer } from '@/components/charts/enhanced-chart-viewer';
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -17,6 +19,7 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import { Maximize2 } from 'lucide-react';
 
 interface SiteAnalysisModalProps {
   isOpen: boolean;
@@ -31,6 +34,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
 }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState(7);
   const [selectedPollutants, setSelectedPollutants] = useState<PollutantType[]>([]);
+  const { isOpen: isViewerOpen, chartConfig, openViewer, closeViewer } = useEnhancedChartViewer();
   
   const {
     pollutionData,
@@ -115,6 +119,34 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
       case 'stable':
         return <MinusIcon className="w-4 h-4 text-gray-400" />;
     }
+  };
+
+  const handleExpandChart = (config: any, index: number) => {
+    // 构造图表数据
+    const chartData = pollutionData.map(data => ({
+      region: station.address.split(' ')[0] || '未知地区',
+      city: station.address.split(' ')[1] || '未知城市',
+      date: data.timestamp.toISOString().split('T')[0],
+      hour: data.timestamp.getHours(),
+      co2Emissions: 0, // 根据实际数据结构调整
+      pm25: data.pollutant === PollutantType.PM25 ? data.value : 0,
+      pm10: data.pollutant === PollutantType.PM10 ? data.value : 0,
+      no2: data.pollutant === PollutantType.NO2 ? data.value : 0,
+      so2: data.pollutant === PollutantType.SO2 ? data.value : 0,
+      o3: data.pollutant === PollutantType.O3 ? data.value : 0,
+      co: data.pollutant === PollutantType.CO ? data.value : 0,
+      aqi: data.pollutant === PollutantType.AQI ? data.value : 0,
+      coordinates: [0, 0] as [number, number], // 根据实际坐标调整
+    }));
+
+    openViewer({
+      type: 'trend',
+      data: chartData,
+      title: `${config.title} - 全屏视图`,
+      description: `${station.name} 站点详细数据分析`,
+      selectedPollutants: selectedPollutants.map(p => p.toLowerCase()),
+      timeGranularity: selectedTimeRange <= 7 ? 'hour' : selectedTimeRange <= 30 ? 'day' : 'month'
+    });
   };
 
   return (
@@ -254,11 +286,20 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {chartConfigs.map((config, index) => (
                 <Card key={index}>
-                  <CardHeader>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="flex items-center space-x-2">
                       <ChartBarIcon className="w-5 h-5" />
                       <span>{config.title}</span>
                     </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleExpandChart(config, index)}
+                      className="h-8 w-8 p-0 opacity-60 hover:opacity-100"
+                      title="全屏查看"
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </Button>
                   </CardHeader>
                   <CardContent>
                     <div className="h-64 flex items-center justify-center bg-gray-800 rounded-lg">
@@ -327,6 +368,13 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
           </>
         )}
       </div>
+      
+      {/* 增强图表查看器 */}
+      <EnhancedChartViewer
+        isOpen={isViewerOpen}
+        onClose={closeViewer}
+        chartConfig={chartConfig}
+      />
     </Modal>
   );
 };

@@ -3,12 +3,14 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { X, MapPin, Activity, TrendingUp, BarChart3 } from "lucide-react"
+import { X, MapPin, Activity, TrendingUp, BarChart3, Maximize2 } from "lucide-react"
 import type { MonitoringStation } from "@/lib/monitoring-stations"
 import { useSiteAnalytics } from "@/app/hooks/useSiteAnalytics"
 import { pollutantTypes } from "@/lib/mock-data"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
+import { useEnhancedChartViewer } from "@/hooks/useEnhancedChartViewer"
+import { EnhancedChartViewer } from "@/components/modals/EnhancedChartViewer"
 
 interface SiteDetailPanelProps {
   station: MonitoringStation | null
@@ -29,6 +31,7 @@ export function SiteDetailPanel({
 }: SiteDetailPanelProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const { analytics, isLoading, error } = useSiteAnalytics(station?.name, month)
+  const { isOpen: isViewerOpen, chartConfig, openViewer, closeViewer } = useEnhancedChartViewer()
 
   useEffect(() => {
     if (isOpen && station) {
@@ -82,6 +85,36 @@ export function SiteDetailPanel({
     }
   }
 
+  const handleExpandAnalytics = () => {
+    if (!analytics || !station) return
+    
+    // 构造图表数据
+    const chartData = selectedPollutants.map((pollutant) => ({
+      region: station.region,
+      city: station.city,
+      date: `2024-${month?.toString().padStart(2, '0') || '01'}-15`,
+      hour: 12,
+      co2Emissions: analytics.co2 || 0,
+      pm25: analytics.pm25 || 0,
+      pm10: analytics.pm10 || 0,
+      no2: analytics.no2 || 0,
+      so2: analytics.so2 || 0,
+      o3: analytics.o3 || 0,
+      co: analytics.co || 0,
+      aqi: analytics.aqi || 0,
+      coordinates: station.coordinates,
+    }))
+
+    openViewer({
+      type: 'trend',
+      data: chartData,
+      title: `${station.name} - 详细数据分析`,
+      description: `${station.city} ${getTypeText(station.type)} ${analytics.time}月数据详情`,
+      selectedPollutants,
+      timeGranularity
+    })
+  }
+
   const renderContent = () => {
     if (isLoading) {
       return <div className="flex items-center justify-center h-full"><div className="loading-spinner" /></div>
@@ -129,11 +162,20 @@ export function SiteDetailPanel({
         </Card>
 
         <Card className={`chart-container ${isLoaded ? "loaded" : ""}`} style={{ animationDelay: "0.1s" }}>
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               {analytics.time}月数据指标
             </CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExpandAnalytics}
+              className="h-8 w-8 p-0 opacity-60 hover:opacity-100"
+              title="全屏查看数据分析"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
@@ -160,31 +202,40 @@ export function SiteDetailPanel({
   }
 
   return (
-    <div className={`site-detail-panel ${isOpen ? "open" : ""}`}>
-      <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
-              <MapPin className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold">{station.name}</h2>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{station.city}</span>
-                <span>•</span>
-                <span>{getTypeText(station.type)}</span>
-                <Badge variant={getStatusBadgeVariant(station.status)} className="text-xs">
-                  {getStatusText(station.status)}
-                </Badge>
+    <>
+      <div className={`site-detail-panel ${isOpen ? "open" : ""}`}>
+        <div className="h-full flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
+                <MapPin className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">{station.name}</h2>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{station.city}</span>
+                  <span>•</span>
+                  <span>{getTypeText(station.type)}</span>
+                  <Badge variant={getStatusBadgeVariant(station.status)} className="text-xs">
+                    {getStatusText(station.status)}
+                  </Badge>
+                </div>
               </div>
             </div>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
+          {renderContent()}
         </div>
-        {renderContent()}
       </div>
-    </div>
+      
+      {/* 增强图表查看器 */}
+      <EnhancedChartViewer
+        isOpen={isViewerOpen}
+        onClose={closeViewer}
+        chartConfig={chartConfig}
+      />
+    </>
   )
 }

@@ -2,16 +2,19 @@
 
 import { Line, LineChart, XAxis, YAxis, Legend, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import type { PollutionData } from "@/lib/mock-data"
+import { Maximize2 } from "lucide-react"
 
 interface PollutionTrendChartProps {
   data: PollutionData[]
   title: string
   description?: string
+  onExpand?: () => void
 }
 
-export function PollutionTrendChart({ data, title, description }: PollutionTrendChartProps) {
+export function PollutionTrendChart({ data, title, description, onExpand }: PollutionTrendChartProps) {
   const chartData = data.slice(0, 30).map((item) => ({
     date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     CO2: item.co2Emissions,
@@ -24,9 +27,22 @@ export function PollutionTrendChart({ data, title, description }: PollutionTrend
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+        <div className="space-y-1">
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </div>
+        {onExpand && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onExpand}
+            className="h-8 w-8 p-0 opacity-60 hover:opacity-100"
+            title="全屏查看"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <ChartContainer

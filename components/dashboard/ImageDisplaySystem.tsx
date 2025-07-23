@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { MapPin, TrendingUp, Globe } from "lucide-react"
 
 interface ImageDisplaySystemProps {
@@ -53,6 +54,7 @@ const variableMapping = {
 export function ImageDisplaySystem({ filters, showImages, showNationalMap }: ImageDisplaySystemProps) {
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const handleImageLoad = (src: string) => {
     setLoadedImages(prev => new Set([...prev, src]))
@@ -192,7 +194,10 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="relative bg-muted min-h-[400px] flex items-center justify-center">
+          <div 
+            className="relative bg-muted min-h-[400px] flex items-center justify-center cursor-pointer group"
+            onClick={() => !hasError && setSelectedImage(config.src)}
+          >
             {isLoading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <Skeleton className="w-full h-full" />
@@ -218,7 +223,7 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
             <img
               src={config.src}
               alt={config.alt}
-              className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
+              className={`max-w-full max-h-full object-contain transition-all duration-300 group-hover:scale-105 ${
                 isLoading ? 'opacity-0' : 'opacity-100'
               }`}
               onLoad={() => handleImageLoad(config.src)}
@@ -239,32 +244,44 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
   const shouldUseFullWidthLayout = showNationalMap || imageConfigs.length === 1
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">
-          {showNationalMap ? '全国监测站点分布' : '数据可视化结果'}
-        </h3>
-        {showImages && (
-          <Badge variant="outline" className="text-xs">
-            {imageConfigs.length} 张图像
-          </Badge>
-        )}
+    <>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            {showNationalMap ? '全国监测站点分布' : '数据可视化结果'}
+          </h3>
+          {showImages && (
+            <Badge variant="outline" className="text-xs">
+              {imageConfigs.length} 张图像
+            </Badge>
+          )}
+        </div>
+        
+        <div className={shouldUseFullWidthLayout ? 
+          "flex justify-center w-full" : 
+          "grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3"
+        }>
+          {imageConfigs.map((config, index) => 
+            shouldUseFullWidthLayout ? (
+              <div key={`${config.src}-${index}`} className="w-full max-w-6xl">
+                {renderImageCard(config, index)}
+              </div>
+            ) : (
+              renderImageCard(config, index)
+            )
+          )}
+        </div>
       </div>
-      
-      <div className={shouldUseFullWidthLayout ? 
-        "flex justify-center w-full" : 
-        "grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3"
-      }>
-        {imageConfigs.map((config, index) => 
-          shouldUseFullWidthLayout ? (
-            <div key={`${config.src}-${index}`} className="w-full max-w-6xl">
-              {renderImageCard(config, index)}
-            </div>
-          ) : (
-            renderImageCard(config, index)
-          )
-        )}
-      </div>
-    </div>
+
+      <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
+        <DialogContent className="max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] xl:max-w-4xl h-auto p-2">
+          <img 
+            src={selectedImage || ''} 
+            alt="Enlarged view" 
+            className="w-full h-auto object-contain max-h-[85vh] rounded-md" 
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
