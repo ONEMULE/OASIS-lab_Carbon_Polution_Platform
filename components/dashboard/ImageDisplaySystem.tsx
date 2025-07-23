@@ -26,6 +26,30 @@ interface ImageConfig {
   icon: React.ReactNode
 }
 
+// Variable mapping from Chinese names to file names
+const variableMapping = {
+  'wrf-mcip': {
+    spatial: {
+      '温度': 'TEMP2',
+      '风向': 'WDIR10', 
+      '风速': 'WSPD10'
+    },
+    timeseries: {
+      '温度': 'temp',
+      '风向': 'wdir',
+      '风速': 'wspd'
+    }
+  },
+  'cmaq': {
+    spatial: {
+      // Variables match directly: CO, SO2, NO2, O3, PM10, PM2.5
+    },
+    timeseries: {
+      // Variables match directly: CO, SO2, NO2, O3, PM10, PM2.5  
+    }
+  }
+}
+
 export function ImageDisplaySystem({ filters, showImages, showNationalMap }: ImageDisplaySystemProps) {
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
@@ -59,6 +83,13 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
     }
 
     const { dataSource, stations = [], department, variable, month } = filters
+    
+    // Map variable name to file name based on plot type
+    const getVariableFileName = (ds: string, varName: string, plotType: 'spatial' | 'timeseries'): string => {
+      const dsMapping = variableMapping[ds as keyof typeof variableMapping] as any
+      const mapping = dsMapping?.[plotType]
+      return mapping?.[varName] || varName
+    }
 
     switch (dataSource) {
       case 'meic':
@@ -79,8 +110,11 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
         if (stations.length > 0) {
           // 有站点选择：显示两张时间序列图 + 全国地理空间分布图
           stations.forEach(stationName => {
+            const spatialVariable = getVariableFileName(dataSource, variable, 'spatial')
+            const timeseriesVariable = getVariableFileName(dataSource, variable, 'timeseries')
+            
             configs.push({
-              src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/spatial_plot/${stationName}/${variable}/month_${month.toString().padStart(2, '0')}.png`,
+              src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/spatial_plot/${stationName}/${spatialVariable}/month_${month.toString().padStart(2, '0')}.png`,
               alt: `${stationName} ${variable} 空间分布`,
               title: `${stationName} - ${variable} 空间分布`,
               type: 'spatial',
@@ -88,7 +122,7 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
             })
             
             configs.push({
-              src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/time_series_plot/${stationName}/${variable}/month_${month.toString().padStart(2, '0')}.png`,
+              src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/time_series_plot/${stationName}/${timeseriesVariable}/month_${month.toString().padStart(2, '0')}.png`,
               alt: `${stationName} ${variable} 时间序列`,
               title: `${stationName} - ${variable} 时间序列`,
               type: 'timeseries',
@@ -96,23 +130,22 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
             })
           })
           
-          // 添加全国该月地理空间分布图
-          configs.push({
-            src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/national_spatial/${variable}/month_${month.toString().padStart(2, '0')}.png`,
-            alt: `全国 ${variable} ${month}月地理空间分布`,
-            title: `全国 ${variable} 地理空间分布 (${month}月)`,
-            type: 'spatial',
-            icon: <Globe className="h-4 w-4" />
-          })
+          // Note: national_spatial directories don't exist, skip national map for now
         } else {
-          // 无站点选择：只显示一张全国图
-          configs.push({
-            src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/national_spatial/${variable}/month_${month.toString().padStart(2, '0')}.png`,
-            alt: `全国 ${variable} ${month}月分布`,
-            title: `全国 ${variable} 分布 (${month}月)`,
-            type: 'spatial',
-            icon: <Globe className="h-4 w-4" />
-          })
+          // 无站点选择：显示第一个站点的图像作为示例
+          if (variable) {
+            // Use a default station for display when no specific station is selected
+            const defaultStation = dataSource === 'wrf-mcip' ? 'BEIJING - CAPITAL INTERNATIONAL AIRPORT' : 'AIHUI'
+            const spatialVariable = getVariableFileName(dataSource, variable, 'spatial')
+            
+            configs.push({
+              src: `/images/${dataSource === 'wrf-mcip' ? 'wrf' : 'cmaq'}/spatial_plot/${defaultStation}/${spatialVariable}/month_${month.toString().padStart(2, '0')}.png`,
+              alt: `${variable} ${month}月空间分布示例`,
+              title: `${variable} 空间分布示例 (${month}月)`,
+              type: 'spatial',
+              icon: <Globe className="h-4 w-4" />
+            })
+          }
         }
         break
 
