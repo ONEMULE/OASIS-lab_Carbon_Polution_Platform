@@ -5,12 +5,12 @@ export const dataSources = [
   { id: "cmaq", name: "CMAQ", hasStations: true },
 ]
 
-export const meicDepartments = ["固定燃烧", "工业过程", "移动源", "溶剂使用", "农业"]
+export const meicDepartments = ["AGRICULTURE", "INDUSTRY", "POWER", "RESIDENTIAL", "TRANSPORTATION"]
 
 export const variables = {
   "wrf-mcip": ["温度", "风向", "风速"],
   meic: ["SO2", "NOx", "CO", "NMVOC", "NH3", "PM10", "PM2.5", "BC", "OC", "甲烷"],
-  megan: ["BVOCs", "排放速率", "碳排放量"],
+  megan: ["ACET", "ALD2", "ALDX", "CH4", "CO", "ETH", "ETHA", "ETOH", "FORM", "GDAY", "IOLE", "ISOP", "KET", "MEOH", "NO", "NR", "OLE", "PAR", "PRPA", "TERP", "TOL", "XYL"],
   cmaq: ["CO", "SO2", "NOx", "O3", "PM10", "PM2.5"],
 }
 
