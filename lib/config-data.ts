@@ -9,7 +9,7 @@ export const meicDepartments = ["AGRICULTURE", "INDUSTRY", "POWER", "RESIDENTIAL
 
 export const variables = {
   "wrf-mcip": ["温度", "风向", "风速"],
-  meic: ["SO2", "NOx", "CO", "NMVOC", "NH3", "PM10", "PM2.5", "BC", "OC", "甲烷"],
+  meic: ["SO2", "NOx", "CO", "NMVOC", "NH3", "PM10", "PM2.5", "BC", "OC"],
   megan: ["ACET", "ALD2", "ALDX", "CH4", "CO", "ETH", "ETHA", "ETOH", "FORM", "GDAY", "IOLE", "ISOP", "KET", "MEOH", "NO", "NR", "OLE", "PAR", "PRPA", "TERP", "TOL", "XYL"],
   cmaq: ["CO", "SO2", "NOx", "O3", "PM10", "PM2.5"],
 }
