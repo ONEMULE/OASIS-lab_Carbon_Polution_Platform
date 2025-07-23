@@ -8,13 +8,13 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', gradient = 'none', ...props }, ref) => {
-    const baseStyles = 'rounded-2xl border border-medium-gray backdrop-blur';
+    const baseStyles = 'rounded-2xl border border-border backdrop-blur';
     
     const variantStyles = {
-      default: 'bg-dark-gray shadow-[0_4px_24px_rgba(0,0,0,0.25)] p-8',
-      feature: 'bg-dark-gray shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-10',
-      testimonial: 'bg-dark-gray shadow-[0_4px_16px_rgba(0,0,0,0.2)] p-6',
-      pricing: 'bg-dark-gray shadow-[0_4px_24px_rgba(0,0,0,0.25)] p-8',
+      default: 'bg-card shadow-[0_4px_24px_rgba(0,0,0,0.25)] p-8',
+      feature: 'bg-card shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-10',
+      testimonial: 'bg-card shadow-[0_4px_16px_rgba(0,0,0,0.2)] p-6',
+      pricing: 'bg-card shadow-[0_4px_24px_rgba(0,0,0,0.25)] p-8',
     };
 
     const gradientStyles = {

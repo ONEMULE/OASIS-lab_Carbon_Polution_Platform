@@ -145,7 +145,7 @@ export function SiteDetailPanel({
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pollutant.color }} />
                       <span className="text-sm font-medium">{pollutant.name}</span>
                     </div>
-                    <span className="text-sm font-bold">
+                    <span className="text-sm font-bold text-black">
                       {typeof value === 'number' ? value.toFixed(3) : value}
                       {pollutant.unit}
                     </span>

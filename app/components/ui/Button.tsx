@@ -8,8 +8,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: 'bg-white text-black hover:bg-gray-100 hover:-translate-y-0.5 shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:translate-y-0 active:shadow-[0_1px_4px_rgba(0,0,0,0.1)]',
-        secondary: 'bg-medium-gray text-white border border-light-gray hover:bg-[#333333] hover:border-[#888888]',
-        ghost: 'bg-transparent text-white border border-light-gray hover:bg-dark-gray hover:border-[#888888]',
+        secondary: 'bg-secondary text-white border border-border hover:bg-secondary/80 hover:border-border',
+        ghost: 'bg-transparent text-white border border-border hover:bg-muted hover:border-border',
         destructive: 'bg-error text-white hover:bg-red-600',
         success: 'bg-success text-white hover:bg-green-600',
       },

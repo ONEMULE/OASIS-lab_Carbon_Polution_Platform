@@ -113,11 +113,52 @@
 
 /* 数据卡片样式 */
 .data-card {
-  @apply bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow;
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 1rem;
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.data-card-dark {
-  @apply bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700;
+.data-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.data-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.data-card:hover::before {
+  opacity: 1;
+}
+
+/* 数据卡片内容样式 */
+.data-card .card-title {
+  color: hsl(var(--card-foreground));
+  font-weight: 600;
+}
+
+.data-card .card-description {
+  color: hsl(var(--muted-foreground));
+}
+
+.data-card .card-value {
+  color: #000000;
+  font-weight: 700;
 }
 
 /* 侧边栏动画 */
@@ -173,7 +214,8 @@
   width: 100%;
   max-width: 800px;
   height: 60vh;
-  background: white;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
   border-radius: 16px 16px 0 0;
   box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.15);
   transform: translateY(100%);
@@ -183,6 +225,75 @@
 
 .site-detail-panel.open {
   transform: translateY(0);
+}
+
+/* 增强站点详情面板 */
+.enhanced-site-detail-panel {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+}
+
+.enhanced-site-detail-panel.compact {
+  transform: translateY(100%);
+}
+
+.enhanced-site-detail-panel.compact.open {
+  transform: translateY(0);
+}
+
+.enhanced-site-detail-panel.expanded {
+  transform: scale(0.8) translate(-50%, -50%);
+  opacity: 0;
+}
+
+.enhanced-site-detail-panel.expanded.open {
+  transform: scale(1) translate(-50%, -50%);
+  opacity: 1;
+}
+
+.enhanced-site-detail-panel.fullscreen {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.enhanced-site-detail-panel.fullscreen.open {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* 面板拖拽效果 */
+.enhanced-site-detail-panel .cursor-move:active {
+  cursor: grabbing;
+}
+
+/* 面板内容动画 */
+.enhanced-site-detail-panel .chart-container {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease-out;
+}
+
+.enhanced-site-detail-panel .chart-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .enhanced-site-detail-panel.compact {
+    width: 100vw;
+    height: 70vh;
+    bottom: 0;
+    right: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .enhanced-site-detail-panel.expanded {
+    width: 95vw;
+    height: 90vh;
+  }
 }
 
 @media (min-width: 768px) {

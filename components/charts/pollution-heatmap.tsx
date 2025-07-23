@@ -1,15 +1,18 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import type { PollutionData } from "@/lib/mock-data"
+import { Maximize2 } from "lucide-react"
 
 interface PollutionHeatmapProps {
   data: PollutionData[]
   title: string
   description?: string
+  onExpand?: () => void
 }
 
-export function PollutionHeatmap({ data, title, description }: PollutionHeatmapProps) {
+export function PollutionHeatmap({ data, title, description, onExpand }: PollutionHeatmapProps) {
   // Create a simplified heatmap using CSS grid and background colors
   const regionData = data.reduce(
     (acc, item) => {
@@ -31,9 +34,22 @@ export function PollutionHeatmap({ data, title, description }: PollutionHeatmapP
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+        <div className="space-y-1">
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </div>
+        {onExpand && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onExpand}
+            className="h-8 w-8 p-0 opacity-60 hover:opacity-100"
+            title="全屏查看"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-6">

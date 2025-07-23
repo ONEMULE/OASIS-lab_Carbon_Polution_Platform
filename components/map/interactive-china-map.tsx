@@ -300,7 +300,7 @@ export function InteractiveChinaMap({
                   <span className="font-medium">
                     {pollutantTypes[selectedPollutant as keyof typeof pollutantTypes]?.name}:
                   </span>
-                  <span className="ml-1">{tooltip.content}</span>
+                  <span className="ml-1 text-black font-bold">{tooltip.content}</span>
                 </div>
                 <div className="text-xs opacity-75 mt-1">
                   状态:{" "}

@@ -2,11 +2,13 @@
 
 import { Line, LineChart, XAxis, YAxis, Legend, ResponsiveContainer, Tooltip } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { ChartContainer } from "@/components/ui/chart"
 import type { CarbonPollutionData } from "@/lib/mock-data"
 import { pollutantTypes } from "@/lib/mock-data"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
+import { Maximize2 } from "lucide-react"
 
 interface TrendChartProps {
   data: CarbonPollutionData[]
@@ -14,9 +16,10 @@ interface TrendChartProps {
   title: string
   description?: string
   timeGranularity: "hour" | "day" | "month" | "year"
+  onExpand?: () => void
 }
 
-export function TrendChart({ data, selectedPollutants, title, description, timeGranularity }: TrendChartProps) {
+export function TrendChart({ data, selectedPollutants, title, description, timeGranularity, onExpand }: TrendChartProps) {
   // 按时间排序并限制数据点数量
   const sortedData = data
     .sort((a, b) => {
@@ -77,9 +80,22 @@ export function TrendChart({ data, selectedPollutants, title, description, timeG
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+        <div className="space-y-1">
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </div>
+        {onExpand && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onExpand}
+            className="h-8 w-8 p-0 opacity-60 hover:opacity-100"
+            title="全屏查看"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (

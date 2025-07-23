@@ -35,12 +35,12 @@ const Modal: React.FC<ModalProps> = ({
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <DialogPanel
           className={cn(
-            'w-full bg-dark-gray rounded-2xl border border-medium-gray shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md',
+            'w-full bg-card rounded-2xl border border-border shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md',
             sizeStyles[size],
             className
           )}
         >
-          <div className="flex items-center justify-between p-6 border-b border-medium-gray">
+          <div className="flex items-center justify-between p-6 border-b border-border">
             {title && (
               <DialogTitle className="text-xl font-semibold text-white">
                 {title}
@@ -48,7 +48,7 @@ const Modal: React.FC<ModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-medium-gray transition-colors"
+              className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-muted transition-colors"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>

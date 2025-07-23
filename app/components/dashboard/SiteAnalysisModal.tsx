@@ -136,23 +136,23 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Typography variant="body-small" className="text-gray-400">
+                <Typography variant="body-small" className="text-gray-300">
                   站点编号
                 </Typography>
-                <Typography variant="body-medium" className="mt-1">
+                <Typography variant="body-medium" className="mt-1 text-black">
                   {station.code}
                 </Typography>
               </div>
               <div>
-                <Typography variant="body-small" className="text-gray-400">
+                <Typography variant="body-small" className="text-gray-300">
                   地理位置
                 </Typography>
-                <Typography variant="body-medium" className="mt-1">
+                <Typography variant="body-medium" className="mt-1 text-black">
                   {station.address}
                 </Typography>
               </div>
               <div>
-                <Typography variant="body-small" className="text-gray-400">
+                <Typography variant="body-small" className="text-gray-300">
                   运行状态
                 </Typography>
                 <Typography variant="body-medium" className={`mt-1 ${getStatusColor(station.status)}`}>
@@ -167,7 +167,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
         <div className="flex flex-wrap gap-4 items-center justify-between">
           {/* Time Range */}
           <div className="flex items-center space-x-2">
-            <Typography variant="body-small" className="text-gray-400">
+            <Typography variant="body-small" className="text-white">
               时间范围:
             </Typography>
             {[7, 30, 90].map((days) => (
@@ -184,7 +184,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
 
           {/* Pollutant Selection */}
           <div className="flex items-center space-x-2">
-            <Typography variant="body-small" className="text-gray-400">
+            <Typography variant="body-small" className="text-white">
               污染物:
             </Typography>
             {station.pollutants.map((pollutant) => (
@@ -199,7 +199,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: getPollutantColor(pollutant) }}
                 />
-                <span>{pollutant}</span>
+                <span className="text-black">{pollutant}</span>
               </Button>
             ))}
           </div>
@@ -233,15 +233,15 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
                 <Card key={pollutant}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <Typography variant="body-small" className="text-gray-400">
+                      <Typography variant="body-small" className="text-gray-300">
                         {pollutant}
                       </Typography>
                       {getTrendIcon(getTrendDirection(pollutant))}
                     </div>
-                    <Typography variant="h4" className="mb-1">
+                    <Typography variant="h4" className="mb-1 text-black">
                       {getAverageValue(pollutant)}
                     </Typography>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex items-center justify-between text-xs text-black">
                       <span>最小: {getMinValue(pollutant)}</span>
                       <span>最大: {getMaxValue(pollutant)}</span>
                     </div>
@@ -262,7 +262,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
                   </CardHeader>
                   <CardContent>
                     <div className="h-64 flex items-center justify-center bg-gray-800 rounded-lg">
-                      <Typography variant="body-medium" className="text-gray-400">
+                      <Typography variant="body-medium" className="text-black">
                         图表占位符 - {config.type}
                       </Typography>
                     </div>
@@ -281,9 +281,9 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-gray-600">
-                        <th className="text-left py-2 text-gray-400">时间</th>
+                        <th className="text-left py-2 text-gray-300">时间</th>
                         {selectedPollutants.map((pollutant) => (
-                          <th key={pollutant} className="text-left py-2 text-gray-400">
+                          <th key={pollutant} className="text-left py-2 text-gray-300">
                             {pollutant}
                           </th>
                         ))}
@@ -292,7 +292,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
                     <tbody>
                       {pollutionData.slice(0, 10).map((data, index) => (
                         <tr key={index} className="border-b border-gray-700">
-                          <td className="py-2 text-gray-300">
+                          <td className="py-2 text-black">
                             {data.timestamp.toLocaleString()}
                           </td>
                           {selectedPollutants.map((pollutant) => {
@@ -301,7 +301,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
                                    d.pollutant === pollutant
                             );
                             return (
-                              <td key={pollutant} className="py-2 text-white">
+                              <td key={pollutant} className="py-2 text-black">
                                 {pollutantData ? `${pollutantData.value} ${pollutantData.unit}` : '-'}
                               </td>
                             );
@@ -315,7 +315,7 @@ const SiteAnalysisModal: React.FC<SiteAnalysisModalProps> = ({
             </Card>
 
             {/* Update Info */}
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center justify-between text-sm text-black">
               <div className="flex items-center space-x-2">
                 <ClockIcon className="w-4 h-4" />
                 <span>最后更新: {station.lastUpdate.toLocaleString()}</span>
