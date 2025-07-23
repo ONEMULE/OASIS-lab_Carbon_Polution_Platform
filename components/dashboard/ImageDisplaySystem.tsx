@@ -202,6 +202,9 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
     return null
   }
 
+  // 判断是否应该使用全宽布局（全国站点分布图或单张图像）
+  const shouldUseFullWidthLayout = showNationalMap || imageConfigs.length === 1
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -215,12 +218,12 @@ export function ImageDisplaySystem({ filters, showImages, showNationalMap }: Ima
         )}
       </div>
       
-      <div className={showNationalMap ? 
+      <div className={shouldUseFullWidthLayout ? 
         "flex justify-center w-full" : 
         "grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3"
       }>
         {imageConfigs.map((config, index) => 
-          showNationalMap ? (
+          shouldUseFullWidthLayout ? (
             <div key={`${config.src}-${index}`} className="w-full max-w-6xl">
               {renderImageCard(config, index)}
             </div>
